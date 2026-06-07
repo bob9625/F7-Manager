@@ -51,3 +51,20 @@ export type Team = {
   training_time: string | null;
   created_at: string;
 };
+
+export const PLAYER_POSITIONS = [
+  "Portero",
+  "Defensa",
+  "Centrocampista",
+  "Delantero",
+] as const;
+
+export type Player = {
+  id: string;
+  team_id: string;
+  name: string;
+  position: string | null;
+  dorsal: number | null;
+  active: boolean;
+  created_at: string;
+};

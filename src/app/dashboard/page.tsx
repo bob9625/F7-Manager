@@ -86,33 +86,35 @@ export default async function DashboardPage() {
           {teamList.length > 0 && (
             <ul className="mt-6 grid gap-4 sm:grid-cols-2">
               {teamList.map((team) => (
-                <li
-                  key={team.id}
-                  className="rounded-xl border border-white/10 bg-white/5 p-6 font-sans backdrop-blur-sm"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-bebas text-2xl tracking-wide text-white">
-                      {team.name}
-                    </h3>
-                    <span className="rounded-full bg-f7-accent/10 px-3 py-1 text-xs font-semibold text-f7-accent">
-                      {categoryLabel(team.category)}
-                    </span>
-                  </div>
+                <li key={team.id}>
+                  <Link
+                    href={`/dashboard/equipos/${team.id}`}
+                    className="block h-full rounded-xl border border-white/10 bg-white/5 p-6 font-sans backdrop-blur-sm transition hover:border-f7-accent/60"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-bebas text-2xl tracking-wide text-white">
+                        {team.name}
+                      </h3>
+                      <span className="rounded-full bg-f7-accent/10 px-3 py-1 text-xs font-semibold text-f7-accent">
+                        {categoryLabel(team.category)}
+                      </span>
+                    </div>
 
-                  <dl className="mt-4 space-y-1 text-sm text-white/60">
-                    <div className="flex gap-2">
-                      <dt className="text-white/40">Días:</dt>
-                      <dd>
-                        {team.training_days.length > 0
-                          ? team.training_days.map(dayLabel).join(", ")
-                          : "Sin definir"}
-                      </dd>
-                    </div>
-                    <div className="flex gap-2">
-                      <dt className="text-white/40">Hora:</dt>
-                      <dd>{team.training_time ?? "Sin definir"}</dd>
-                    </div>
-                  </dl>
+                    <dl className="mt-4 space-y-1 text-sm text-white/60">
+                      <div className="flex gap-2">
+                        <dt className="text-white/40">Días:</dt>
+                        <dd>
+                          {team.training_days.length > 0
+                            ? team.training_days.map(dayLabel).join(", ")
+                            : "Sin definir"}
+                        </dd>
+                      </div>
+                      <div className="flex gap-2">
+                        <dt className="text-white/40">Hora:</dt>
+                        <dd>{team.training_time ?? "Sin definir"}</dd>
+                      </div>
+                    </dl>
+                  </Link>
                 </li>
               ))}
             </ul>
