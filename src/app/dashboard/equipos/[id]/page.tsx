@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PlayersManager } from "@/components/players/players-manager";
+import { getTeamPlayerStats } from "@/lib/matches";
 import {
   TEAM_CATEGORY_LABELS,
   TRAINING_DAY_LABELS,
@@ -54,6 +55,8 @@ export default async function TeamDetailPage({
 
   const playerList = (players ?? []) as Player[];
 
+  const playerStats = await getTeamPlayerStats(supabase, id);
+
   return (
     <main className="min-h-screen bg-f7-bg px-4 py-12">
       <div className="mx-auto w-full max-w-3xl">
@@ -92,7 +95,11 @@ export default async function TeamDetailPage({
           <h2 className="mb-4 font-bebas text-2xl tracking-wide text-white">
             Jugadores
           </h2>
-          <PlayersManager teamId={typedTeam.id} initialPlayers={playerList} />
+          <PlayersManager
+            teamId={typedTeam.id}
+            initialPlayers={playerList}
+            playerStats={playerStats}
+          />
         </section>
       </div>
     </main>

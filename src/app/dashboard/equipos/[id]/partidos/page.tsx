@@ -3,8 +3,20 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { getMatches, createMatch, deleteMatch, type Match } from '@/lib/matches'
+import {
+  getMatches,
+  createMatch,
+  createMatchPlayers,
+  deleteMatch,
+  type Match,
+} from '@/lib/matches'
 import { getTeam, getPlayers, type Player } from '@/lib/teams'
+import {
+  MatchParticipationForm,
+  createEmptyParticipation,
+  hasParticipation,
+  type ParticipationState,
+} from '@/components/matches/match-participation-form'
 import { LogoutButton } from '@/components/auth/logout-button'
 
 export default function PartidosPage() {
@@ -33,6 +45,7 @@ export default function PartidosPage() {
     rival_dangers: '',
     rival_weakness: '',
   })
+  const [participation, setParticipation] = useState<ParticipationState>({})
 
   useEffect(() => {
     async function load() {
@@ -52,6 +65,7 @@ export default function PartidosPage() {
       setTeam(teamData)
       setMatches(m)
       setPlayers(p)
+      setParticipation(createEmptyParticipation(p))
       setLoading(false)
     }
     load()
@@ -67,9 +81,14 @@ export default function PartidosPage() {
   const draws = matches.filter(m => m.gf === m.gc).length
   const losses = matches.filter(m => m.gf < m.gc).length
 
+  function openForm() {
+    setParticipation(createEmptyParticipation(players))
+    setShowForm(true)
+  }
+
   async function handleSave() {
     if (!form.date || !form.rival) return
-    await createMatch({
+    const created = await createMatch({
       team_id: teamId,
       date: form.date,
       rival: form.rival,
@@ -84,10 +103,17 @@ export default function PartidosPage() {
       rival_dangers: form.rival_dangers || null,
       rival_weakness: form.rival_weakness || null,
     })
+
+    const participationRows = Object.values(participation).filter(hasParticipation)
+    if (participationRows.length > 0) {
+      await createMatchPlayers(created.id, participationRows)
+    }
+
     const m = await getMatches(teamId)
     setMatches(m)
     setShowForm(false)
     setForm({ date: '', rival: '', jornada: '', loc_vis: 'local', gf: 0, gc: 0, mvp_player_id: '', notes: '', rival_style: '', rival_system: '', rival_dangers: '', rival_weakness: '' })
+    setParticipation(createEmptyParticipation(players))
   }
 
   async function handleDelete(id: string) {
@@ -202,7 +228,7 @@ export default function PartidosPage() {
                 )}
               </select>
               <button
-                onClick={() => setShowForm(true)}
+                onClick={openForm}
                 className="rounded-lg bg-f7-accent px-3 py-1 text-xs font-semibold text-black transition-colors hover:bg-[#00c988]"
               >
                 + Nuevo
@@ -228,13 +254,21 @@ export default function PartidosPage() {
                   >
                     {res.label}
                   </div>
-                  <div className="flex-1">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      router.push(
+                        `/dashboard/equipos/${teamId}/partidos/${m.id}`
+                      )
+                    }
+                    className="flex-1 text-left transition-colors hover:opacity-80"
+                  >
                     <div className="text-sm font-semibold">{m.rival}</div>
                     <div className="text-xs text-f7-text3">
                       {m.date} · {m.loc_vis}{' '}
                       {m.jornada ? `· J${m.jornada}` : ''}
                     </div>
-                  </div>
+                  </button>
                   <div className="font-bebas text-xl tracking-wider">
                     {m.gf}—{m.gc}
                   </div>
@@ -254,7 +288,7 @@ export default function PartidosPage() {
       {/* Modal nuevo partido */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-[#050812]/92 p-4 overflow-y-auto">
-          <div className="my-8 w-full max-w-lg rounded-xl border border-f7-border bg-f7-bg2 p-6">
+          <div className="my-8 w-full max-w-2xl rounded-xl border border-f7-border bg-f7-bg2 p-6">
             <div className="mb-4 font-bebas text-xl tracking-wider text-f7-accent">
               NUEVO PARTIDO
             </div>
@@ -432,6 +466,17 @@ export default function PartidosPage() {
                 placeholder="Aspectos a explotar..."
                 rows={2}
                 className="w-full rounded-lg border border-f7-border2 bg-f7-bg3 px-3 py-2 text-sm text-f7-text outline-none transition-colors focus:border-f7-accent2 resize-y"
+              />
+            </div>
+
+            <div className="mb-4 rounded-xl border border-f7-border bg-f7-bg3 p-4">
+              <div className="mb-3 font-bebas text-lg tracking-wide text-f7-accent">
+                PARTICIPACIÓN
+              </div>
+              <MatchParticipationForm
+                players={players}
+                participation={participation}
+                onChange={setParticipation}
               />
             </div>
 
