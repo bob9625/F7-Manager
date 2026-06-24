@@ -160,6 +160,14 @@ export default function TeamDetailPage() {
               <div className="text-sm">{new Date(team.created_at).toLocaleDateString('es-ES')}</div>
             </div>
           </div>
+          <div className="mt-4 pt-4 border-t border-f7-border">
+            <button
+              onClick={() => router.push(`/dashboard/equipos/${teamId}/partidos`)}
+              className="w-full rounded-lg bg-f7-accent2 px-4 py-3 text-sm font-semibold text-white transition-colors hover:opacity-85"
+            >
+              Gestionar Partidos →
+            </button>
+          </div>
         </div>
 
         {/* Players Section */}

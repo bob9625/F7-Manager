@@ -133,6 +133,22 @@ export default function PartidosPage() {
 
       {/* Main Content */}
       <div className="p-4">
+        {/* Team Info Summary */}
+        <div className="mb-4 rounded-xl border border-f7-border bg-f7-bg2 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="mb-1 text-xs text-f7-text3 uppercase tracking-wider">Equipo</div>
+              <div className="text-sm font-semibold">{team?.name}</div>
+            </div>
+            <button
+              onClick={() => router.push(`/dashboard/equipos/${teamId}`)}
+              className="rounded-lg border border-f7-border2 bg-transparent px-4 py-2 text-xs font-semibold text-f7-text2 transition-colors hover:bg-f7-bg3"
+            >
+              ← Volver al Equipo
+            </button>
+          </div>
+        </div>
+
         {/* Métricas */}
         <div className="mb-4 grid grid-cols-4 gap-2">
           {[
