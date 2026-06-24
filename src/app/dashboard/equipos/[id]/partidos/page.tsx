@@ -361,10 +361,10 @@ export default function PartidosPage() {
               >
                 <option value="">Sin MVP</option>
                 {players
-                  .filter((p) => p.is_active)
+                  .filter((p) => p.active)
                   .map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name} {p.number ? `(${p.number})` : ''}
+                      {p.name} {p.dorsal ? `(${p.dorsal})` : ''}
                     </option>
                   ))}
               </select>
