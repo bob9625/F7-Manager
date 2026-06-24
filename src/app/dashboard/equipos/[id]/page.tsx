@@ -64,13 +64,21 @@ export default async function TeamDetailPage({
           ← Volver al dashboard
         </Link>
 
-        <header className="mt-4 flex flex-wrap items-center gap-3">
-          <h1 className="font-bebas text-4xl tracking-wide text-f7-accent md:text-5xl">
-            {typedTeam.name}
-          </h1>
-          <span className="rounded-full bg-f7-accent/10 px-3 py-1 font-sans text-xs font-semibold text-f7-accent">
-            {categoryLabel(typedTeam.category)}
-          </span>
+        <header className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-bebas text-4xl tracking-wide text-f7-accent md:text-5xl">
+              {typedTeam.name}
+            </h1>
+            <span className="rounded-full bg-f7-accent/10 px-3 py-1 font-sans text-xs font-semibold text-f7-accent">
+              {categoryLabel(typedTeam.category)}
+            </span>
+          </div>
+          <Link
+            href={`/dashboard/equipos/${typedTeam.id}/partidos`}
+            className="rounded-lg bg-f7-accent2 px-4 py-2 font-sans text-sm font-semibold text-white transition hover:opacity-85"
+          >
+            Partidos
+          </Link>
         </header>
 
         <p className="mt-2 font-sans text-sm text-white/50">
