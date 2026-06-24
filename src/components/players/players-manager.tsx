@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLAYER_POSITIONS, type Player } from "@/lib/teams";
+import type { PlayerMatchStats } from "@/lib/matches";
+import { PlayerStatsSection } from "@/components/players/player-stats-section";
 
 const inputClass =
   "w-full rounded-lg border border-white/10 bg-f7-bg px-3 py-2 text-white placeholder-white/30 outline-none transition focus:border-f7-accent focus:ring-1 focus:ring-f7-accent";
@@ -17,9 +19,24 @@ function parseDorsal(value: string): number | null {
 type PlayersManagerProps = {
   teamId: string;
   initialPlayers: Player[];
+  playerStats?: Record<string, PlayerMatchStats>;
 };
 
-export function PlayersManager({ teamId, initialPlayers }: PlayersManagerProps) {
+const emptyStats: PlayerMatchStats = {
+  partidos: 0,
+  goles: 0,
+  tarjetas_amarillas: 0,
+  tarjetas_rojas: 0,
+  partes_totales: 0,
+  promedio_partes: 0,
+  nota_media: null,
+};
+
+export function PlayersManager({
+  teamId,
+  initialPlayers,
+  playerStats = {},
+}: PlayersManagerProps) {
   const supabase = createClient();
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [error, setError] = useState<string | null>(null);
@@ -280,41 +297,46 @@ export function PlayersManager({ teamId, initialPlayers }: PlayersManagerProps) 
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-f7-accent/10 text-sm font-semibold text-f7-accent">
-                          {player.dorsal != null ? player.dorsal : "—"}
-                        </span>
-                        <div>
-                          <p className="font-medium text-white">{player.name}</p>
-                          <p className="text-sm text-white/50">
-                            {player.position ?? "Sin posición"}
-                            {!player.active && (
-                              <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/60">
-                                Inactivo
-                              </span>
-                            )}
-                          </p>
+                    <div>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-f7-accent/10 text-sm font-semibold text-f7-accent">
+                            {player.dorsal != null ? player.dorsal : "—"}
+                          </span>
+                          <div>
+                            <p className="font-medium text-white">{player.name}</p>
+                            <p className="text-sm text-white/50">
+                              {player.position ?? "Sin posición"}
+                              {!player.active && (
+                                <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/60">
+                                  Inactivo
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex shrink-0 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => startEdit(player)}
+                            disabled={isBusy}
+                            className="rounded-lg border border-white/20 px-3 py-1.5 text-sm text-white/70 transition hover:border-f7-accent hover:text-f7-accent disabled:opacity-60"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleActive(player)}
+                            disabled={isBusy}
+                            className="rounded-lg border border-white/20 px-3 py-1.5 text-sm text-white/70 transition hover:border-white/40 disabled:opacity-60"
+                          >
+                            {player.active ? "Desactivar" : "Reactivar"}
+                          </button>
                         </div>
                       </div>
-                      <div className="flex shrink-0 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => startEdit(player)}
-                          disabled={isBusy}
-                          className="rounded-lg border border-white/20 px-3 py-1.5 text-sm text-white/70 transition hover:border-f7-accent hover:text-f7-accent disabled:opacity-60"
-                        >
-                          Editar
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => toggleActive(player)}
-                          disabled={isBusy}
-                          className="rounded-lg border border-white/20 px-3 py-1.5 text-sm text-white/70 transition hover:border-white/40 disabled:opacity-60"
-                        >
-                          {player.active ? "Desactivar" : "Reactivar"}
-                        </button>
-                      </div>
+                      <PlayerStatsSection
+                        stats={playerStats[player.id] ?? emptyStats}
+                      />
                     </div>
                   )}
                 </li>
