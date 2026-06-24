@@ -1,3 +1,5 @@
+import { createClient } from '@/lib/supabase/client'
+
 export const TEAM_CATEGORIES = [
   "prebenjamin",
   "benjamin",
@@ -68,3 +70,25 @@ export type Player = {
   active: boolean;
   created_at: string;
 };
+
+export async function getTeam(teamId: string): Promise<{ name: string } | null> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('teams')
+    .select('name')
+    .eq('id', teamId)
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function getPlayers(teamId: string): Promise<Player[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('players')
+    .select('*')
+    .eq('team_id', teamId)
+    .order('name', { ascending: true })
+  if (error) throw error
+  return data || []
+}
